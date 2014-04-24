@@ -37,7 +37,7 @@
 	.endm
 
 	.macro	alignment_trap, rtemp
-#ifdef CONFIG_ALIGNMENT_TRAP
+#ifdef CONFIG_ALIGNMENT_TRAP && !(__LINUX_ARM_ARCH__ >= 6)
 	ldr	\rtemp, .LCcralign
 	ldr	\rtemp, [\rtemp]
 	mcr	p15, 0, \rtemp, c1, c0
