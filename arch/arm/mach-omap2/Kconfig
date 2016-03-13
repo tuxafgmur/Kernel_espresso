@@ -450,6 +450,17 @@ config OMAP4_HSOTG_ED_CORRECTION
 	  Select this option to overrive HSOTG PHY settings in
 	  order to improve Eye Diagramm. On 4430 CPUs this should
 	  improve Eye Diagram at least 8%.
+
+config OMAP4430_TOP_PERF
+	bool "Enables OMAP 4430 CPU and GPU high frequencies"
+	depends on ARCH_OMAP4
+	default y
+	help
+	  Sets the CPU and GPU frequencies in the boot, 1216 MHz CPU and
+	  384 Mhz GPU, allowing raise it later until overclock limit.
+	  
+	  Also, allows you to change the voltages used for CPU frequencies.
+
 endmenu
 
 endif

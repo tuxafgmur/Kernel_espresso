@@ -32,6 +32,12 @@
 
 #include <trace/events/power.h>
 
+#ifdef CONFIG_OMAP4430_PERFORMANCE
+#define BootSpeed 1216000
+#else
+#define BootSpeed 1008000
+#endif
+
 /**
  * The "cpufreq driver" - the arch- or hardware-dependent low
  * level driver of CPUFreq support, and its spinlock. This lock
@@ -933,7 +939,8 @@ static int cpufreq_add_dev(struct sys_device *sys_dev)
 #endif
 	if (!found)
 		policy->governor = CPUFREQ_DEFAULT_GOVERNOR;
-	/* call driver. From then on the cpufreq must be able
+	/* 
+         * call driver. From then on the cpufreq must be able
 	 * to accept all calls to ->verify and ->setpolicy for this CPU
 	 */
 	ret = cpufreq_driver->init(policy);
@@ -941,6 +948,9 @@ static int cpufreq_add_dev(struct sys_device *sys_dev)
 		pr_debug("initialization failed\n");
 		goto err_unlock_policy;
 	}
+
+	policy->max = BootSpeed;
+
 	policy->user_policy.min = policy->min;
 	policy->user_policy.max = policy->max;
 
