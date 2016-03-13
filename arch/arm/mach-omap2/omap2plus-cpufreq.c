@@ -51,6 +51,9 @@
 #include "prcm44xx.h"
 
 #ifdef CONFIG_OMAP4430_PERFORMANCE
+#include <linux/syscalls.h>
+#include <linux/fs.h>
+#include <asm/uaccess.h>
 #include "smartreflex.h"
 #endif
 
@@ -866,6 +869,23 @@ struct freq_attr omap_cpufreq_attr_screen_off_freq = {
 
 #ifdef CONFIG_OMAP4430_PERFORMANCE
 
+typedef unsigned long mm_segment_t;
+
+static void write_sysfs(char *path, char *data) {
+	int fd;
+
+	mm_segment_t old_fs = get_fs();
+	set_fs(KERNEL_DS);
+
+	fd = sys_open(path, O_WRONLY, 0);
+	if (fd >= 0) {
+		sys_write(fd, data, strlen(data));
+		sys_close(fd);
+	}
+
+	set_fs(old_fs);
+}
+
 static ssize_t show_gpu_frequency(struct cpufreq_policy *policy, char *buf) {
 	unsigned int gpu_mhz[3] = {307,384,512};
 	return sprintf(buf, "%d MHz\n", gpu_mhz[gpu_top_speed]);
@@ -887,8 +907,13 @@ static ssize_t store_gpu_top_speed(struct cpufreq_policy *policy, const char *bu
 {
 	int prev_gpu_top_speed, dummy1, dummy2;
         struct device *dev;
+        char outbuf [12];
 
-	unsigned long gpu_freqs[3] = {307200000,384000000,512000000};
+	/*
+	 * We can read this from /sys/devices/platform/omap/pvrsrvkm.0/sgxfreq/frequency_list
+	 * but this is a specific patch, thus the hardcoded values serve as documentation.
+	 */
+        unsigned long gpu_freqs[3] = {307200000,384000000,512000000};
 
 	if (gpu_top_speed < 0 || gpu_top_speed > 2)
 		prev_gpu_top_speed = 0;
@@ -911,6 +936,8 @@ static ssize_t store_gpu_top_speed(struct cpufreq_policy *policy, const char *bu
 		dummy2 = opp_enable(dev, gpu_freqs[gpu_top_speed]);
 	}
 
+	sprintf(outbuf, "%lu", gpu_freqs[gpu_top_speed]);
+	write_sysfs("/sys/devices/platform/omap/pvrsrvkm.0/sgxfreq/frequency_limit", outbuf);
 	return size;
 }
 
