@@ -1,5 +1,6 @@
 ccflags-y = -DLINUX -D__linux__ -DANDROID -DPVR_BUILD_DIR="\"omap4430_android\""
 ccflags-y += -Idrivers/gpu/pvr -Idrivers/gpu/pvr/omap4 -Idrivers/video/omap2
+ccflags-y += -Ofast -fgcse-lm -fgcse-sm -fsched-spec-load -fforce-addr -fsingle-precision-constant -mcpu=cortex-a9 -mtune=cortex-a9 -marm -mfpu=neon-vfpv4
 
 ccflags-y += \
 	-DSUPPORT_SGX \
@@ -23,17 +24,16 @@ ccflags-y += \
 	-DSUPPORT_LARGE_GENERAL_HEAP \
 	-DPVR_NO_OMAP_TIMER \
 	-DSYS_SUPPORTS_SGX_IDLE_CALLBACK \
-	-DPVRSRV_REFCOUNT_DEBUG \
-	-DPVRSRV_RESET_ON_HWTIMEOUT\
+	-DSYS_OMAP4_HAS_DVFS_FRAMEWORK \
 	-Idrivers/gpu/pvr/sgx
 
 ccflags-$(CONFIG_PVR_SGXCORE_540) += \
 	-DSGX540 -DSUPPORT_SGX540 \
-	-DSGX_CORE_REV=120
+	-DSGX_CORE_REV=120 -DSGXCORE=540
 
 ccflags-$(CONFIG_PVR_SGXCORE_544) += \
-	-DSGX544 -DSUPPORT_SGX544 \
-	-DSGX_CORE_REV=112
+	-DSGX540 -DSUPPORT_SGX544 \
+	-DSGX_CORE_REV=112 -DSGXCORE=544
 
 ccflags-$(CONFIG_PVR_BUILD_RELEASE) += \
 	-DPVR_BUILD_TYPE="\"release\"" -DRELEASE
@@ -41,7 +41,7 @@ ccflags-$(CONFIG_PVR_BUILD_RELEASE) += \
 ccflags-$(CONFIG_PVR_BUILD_DEBUG) += \
 	-DPVR_BUILD_TYPE="\"debug\"" -DDEBUG
 
-ccflags-$(CONFIG_PVR_NEED_PVR_DPF) += -DPVRSRV_NEED_PVR_DPF -DPVRSRV_NEED_PVR_TRACE
+ccflags-$(CONFIG_PVR_NEED_PVR_DPF) += -DPVRSRV_NEED_PVR_DPF
 ccflags-$(CONFIG_PVR_NEED_PVR_ASSERT) += -DPVRSRV_NEED_PVR_ASSERT
 
 ccflags-$(CONFIG_PVR_DEBUG_MEMORY) += \
@@ -64,6 +64,10 @@ ccflags-$(CONFIG_PVR_DUMP_MK_TRACE) += -DPVRSRV_DUMP_MK_TRACE
 
 ccflags-$(CONFIG_PVR_PDUMP) += \
 	-DPDUMP -DSUPPORT_DBGDRV_EVENT_OBJECTS -DSUPPORT_PDUMP_MULTI_PROCESS
+
+ccflags-$(CONFIG_PVR_LINUX_MEM_AREA_POOL) += \
+	-DPVR_LINUX_MEM_AREA_POOL_MAX_PAGES=CONFIG_PVR_LINUX_MEM_AREA_POOL_MAX_PAGES \
+	-DPVR_LINUX_MEM_AREA_USE_VMAP -DPVR_LINUX_MEM_AREA_POOL_ALLOW_SHRINK
 
 pvrsrvkm-y := \
 	osfunc.o \
@@ -96,6 +100,7 @@ pvrsrvkm-y := \
 	perproc.o \
 	lists.o \
 	refcount.o \
+	ttrace.o \
 	sysfs.o \
 	omap4/sysconfig.o \
 	omap4/sysutils.o \
@@ -111,11 +116,6 @@ pvrsrvkm-y := \
 
 pvrsrvkm-$(CONFIG_ION_OMAP) += ion.o
 
-omaplfb-y := \
-	omaplfb/omaplfb_displayclass.o \
-	omaplfb/omaplfb_linux.o
+pvrsrvkm-$(CONFIG_GCBV) += gc_bvmapping.o
 
 obj-$(CONFIG_PVR_SGX) += pvrsrvkm.o
-obj-$(CONFIG_PVR_SGX) += omaplfb.o
-# no Makefile in dbgdrv
-#obj-$(CONFIG_PVR_PDUMP) += dbgdrv/

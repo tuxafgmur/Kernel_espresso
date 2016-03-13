@@ -130,8 +130,7 @@ static int omap_tiler_alloc_dynamicpages(struct omap_tiler_info *info)
 		pg = alloc_page(GFP_KERNEL | GFP_DMA | GFP_HIGHUSER);
 		if (!pg) {
 			ret = -ENOMEM;
-			pr_err("%s: alloc_page failed\n",
-				__func__);
+			pr_err("%s: alloc_page failed\n", __func__);
 			goto err_page_alloc;
 		}
 		info->phys_addrs[i] = page_to_phys(pg);
@@ -177,8 +176,7 @@ int omap_tiler_alloc(struct ion_heap *heap,
 	int ret;
 
 	if (data->fmt == TILER_PIXEL_FMT_PAGE && data->h != 1) {
-		pr_err("%s: Page mode (1D) allocations must have a height "
-		       "of one\n", __func__);
+		pr_err("%s: Page mode (1D) allocations must have a height of one\n", __func__);
 		return -EINVAL;
 	}
 
@@ -210,8 +208,7 @@ int omap_tiler_alloc(struct ion_heap *heap,
 
 	if (IS_ERR_OR_NULL(tiler_handle)) {
 		ret = PTR_ERR(tiler_handle);
-		pr_err("%s: failure to allocate address space from tiler\n",
-		       __func__);
+		pr_err("%s: failure to allocate address space from tiler\n", __func__);
 		goto err_nomem;
 	}
 
@@ -249,8 +246,7 @@ int omap_tiler_alloc(struct ion_heap *heap,
 		ret = tiler_pin_block(info->tiler_handle, info->phys_addrs,
 				      info->n_phys_pages);
 		if (ret) {
-			pr_err("%s: failure to pin pages to tiler\n",
-				__func__);
+			pr_err("%s: failure to pin pages to tiler\n", __func__);
 			goto err_pin;
 		}
 	}
@@ -260,8 +256,7 @@ int omap_tiler_alloc(struct ion_heap *heap,
 	handle = ion_alloc(client, 0, 0, 1 << heap->id);
 	if (IS_ERR_OR_NULL(handle)) {
 		ret = PTR_ERR(handle);
-		pr_err("%s: failure to allocate handle to manage tiler"
-		       " allocation\n", __func__);
+		pr_err("%s: failure to allocate handle to manage tiler allocation\n", __func__);
 		goto err;
 	}
 
@@ -272,10 +267,8 @@ int omap_tiler_alloc(struct ion_heap *heap,
 	data->handle = handle;
 	data->offset = (size_t)(info->tiler_start & ~PAGE_MASK);
 
-	if(tiler_fill_virt_array(tiler_handle, info->tiler_addrs,
-			&n_tiler_pages) < 0) {
-		pr_err("%s: failure filling tiler's virtual array %d\n",
-				__func__, n_tiler_pages);
+	if(tiler_fill_virt_array(tiler_handle, info->tiler_addrs, &n_tiler_pages) < 0) {
+		pr_err("%s: failure filling tiler's virtual array %d\n", __func__, n_tiler_pages);
 	}
 
 	return 0;
@@ -414,14 +407,12 @@ int omap_tiler_cache_operation(struct ion_buffer *buffer, size_t len,
 
 	n_pages = info->n_tiler_pages;
 	if (len > (n_pages * PAGE_SIZE)) {
-		pr_err("%s(): size to flush is greater than allocated size\n",
-			__func__);
+		pr_err("%s(): size to flush is greater than allocated size\n", __func__);
 		return -EINVAL;
 	}
 
 	if (TILER_PIXEL_FMT_PAGE != info->fmt) {
-		pr_err("%s(): only TILER 1D buffers can be cached\n",
-			__func__);
+		pr_err("%s(): only TILER 1D buffers can be cached\n", __func__);
 		return -EINVAL;
 	}
 

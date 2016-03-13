@@ -1,50 +1,74 @@
-/**********************************************************************
- *
- * Copyright (C) Imagination Technologies Ltd. All rights reserved.
- *
- * This program is free software; you can redistribute it and/or modify it
- * under the terms and conditions of the GNU General Public License,
- * version 2, as published by the Free Software Foundation.
- *
- * This program is distributed in the hope it will be useful but, except
- * as otherwise stated in writing, without any warranty; without even the
- * implied warranty of merchantability or fitness for a particular purpose.
- * See the GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License along with
- * this program; if not, write to the Free Software Foundation, Inc.,
- * 51 Franklin St - Fifth Floor, Boston, MA 02110-1301 USA.
- *
- * The full GNU General Public License is included in this distribution in
- * the file called "COPYING".
- *
- * Contact Information:
- * Imagination Technologies Ltd. <gpl-support@imgtec.com>
- * Home Park Estate, Kings Langley, Herts, WD4 8LZ, UK
- *
- ******************************************************************************/
+/*************************************************************************/ /*!
+@Title          pdump functions
+@Copyright      Copyright (c) Imagination Technologies Ltd. All Rights Reserved
+@Description    Main APIs for pdump functions
+@License        Dual MIT/GPLv2
 
+The contents of this file are subject to the MIT license as set out below.
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in
+all copies or substantial portions of the Software.
+
+Alternatively, the contents of this file may be used under the terms of
+the GNU General Public License Version 2 ("GPL") in which case the provisions
+of GPL are applicable instead of those above.
+
+If you wish to allow use of your version of this file only under the terms of
+GPL, and not to allow others to use your version of this file under the terms
+of the MIT license, indicate your decision by deleting the provisions above
+and replace them with the notice and other provisions required by GPL as set
+out in the file called "GPL-COPYING" included in this distribution. If you do
+not delete the provisions above, a recipient may use your version of this file
+under the terms of either the MIT license or GPL.
+
+This License is also included in this distribution in the file called
+"MIT-COPYING".
+
+EXCEPT AS OTHERWISE STATED IN A NEGOTIATED AGREEMENT: (A) THE SOFTWARE IS
+PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING
+BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
+PURPOSE AND NONINFRINGEMENT; AND (B) IN NO EVENT SHALL THE AUTHORS OR
+COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER
+IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
+CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+*/ /**************************************************************************/
 #ifndef _PDUMP_KM_H_
 #define _PDUMP_KM_H_
 
-
+/*
+ * Include the OS abstraction APIs
+ */
 #include "pdump_osfunc.h"
 
 #if defined(__cplusplus)
 extern "C" {
 #endif
 
+/*
+ *	Pull in pdump flags from services include
+ */
 #include "pdump.h"
 
 #define PDUMP_PD_UNIQUETAG			(IMG_HANDLE)0
 #define PDUMP_PT_UNIQUETAG			(IMG_HANDLE)0
 
+/*
+ * PDump streams (common to all OSes)
+ */
 #define PDUMP_STREAM_PARAM2			0
 #define PDUMP_STREAM_SCRIPT2		1
 #define PDUMP_STREAM_DRIVERINFO		2
 #define PDUMP_NUM_STREAMS			3
 
 #if defined(PDUMP_DEBUG_OUTFILES)
+/* counter increments each time debug write is called */
 extern IMG_UINT32 g_ui32EveryLineCounter;
 #endif
 
@@ -90,12 +114,12 @@ extern IMG_UINT32 g_ui32EveryLineCounter;
 
 	PVRSRV_ERROR PDumpMemPDEntriesKM(PDUMP_MMU_ATTRIB *psMMUAttrib,
 									 IMG_HANDLE hOSMemHandle,
-									 IMG_CPU_VIRTADDR pvLinAddr,
-									 IMG_UINT32 ui32Bytes,
-									 IMG_UINT32 ui32Flags,
-									 IMG_BOOL bInitialisePages,
-									 IMG_HANDLE hUniqueTag1,
-									 IMG_HANDLE hUniqueTag2);
+							 		 IMG_CPU_VIRTADDR pvLinAddr,
+							 		 IMG_UINT32 ui32Bytes,
+							 		 IMG_UINT32 ui32Flags,
+							 		 IMG_BOOL bInitialisePages,
+							 		 IMG_HANDLE hUniqueTag1,
+							 		 IMG_HANDLE hUniqueTag2);
 
 	PVRSRV_ERROR PDumpMemPTEntriesKM(PDUMP_MMU_ATTRIB *psMMUAttrib,
 									 IMG_HANDLE         hOSMemHandle,
@@ -199,12 +223,12 @@ extern IMG_UINT32 g_ui32EveryLineCounter;
 	IMG_BOOL PDumpTestNextFrame(IMG_UINT32 ui32CurrentFrame);
 
 	PVRSRV_ERROR PDumpSaveMemKM (PVRSRV_DEVICE_IDENTIFIER *psDevId,
-								 IMG_CHAR			*pszFileName,
+							 	 IMG_CHAR			*pszFileName,
 								 IMG_UINT32			ui32FileOffset,
 								 IMG_DEV_VIRTADDR	sDevBaseAddr,
-								 IMG_UINT32		ui32Size,
-								 IMG_UINT32		ui32DataMaster,
-								 IMG_UINT32		ui32PDumpFlags);
+								 IMG_UINT32 		ui32Size,
+								 IMG_UINT32 		ui32DataMaster,
+								 IMG_UINT32 		ui32PDumpFlags);
 
 	PVRSRV_ERROR PDumpTASignatureRegisters(PVRSRV_DEVICE_IDENTIFIER *psDevId,
 								   IMG_UINT32	ui32DumpFrameNum,
@@ -242,7 +266,7 @@ extern IMG_UINT32 g_ui32EveryLineCounter;
 								  IMG_HANDLE				hOSMemHandle,
 								  IMG_UINT32				ui32NumBytes,
 								  IMG_UINT32				ui32PageSize,
-		                          IMG_BOOL					bShared,
+		                          IMG_BOOL			  		bShared,
 								  IMG_HANDLE				hUniqueTag);
 	PVRSRV_ERROR PDumpMallocPageTable(PVRSRV_DEVICE_IDENTIFIER	*psDevId,
 									  IMG_HANDLE            hOSMemHandle,
@@ -255,8 +279,9 @@ extern IMG_UINT32 g_ui32EveryLineCounter;
 							IMG_DEV_VIRTADDR	sDevVAddr,
 							IMG_UINT32			ui32NumBytes,
 							IMG_UINT32			ui32PageSize,
-							IMG_HANDLE		hUniqueTag,
-							IMG_BOOL			bInterleaved);
+							IMG_HANDLE      	hUniqueTag,
+							IMG_BOOL			bInterleaved,
+							IMG_BOOL			bSparse);
 	PVRSRV_ERROR PDumpFreePageTable(PVRSRV_DEVICE_IDENTIFIER *psDevID,
 									IMG_HANDLE          hOSMemHandle,
 									IMG_CPU_VIRTADDR	pvLinAddr,
@@ -268,18 +293,18 @@ extern IMG_UINT32 g_ui32EveryLineCounter;
 										IMG_CHAR			*pszFileName,
 										IMG_UINT32			ui32FileOffset,
 										IMG_DEV_VIRTADDR	sDevBaseAddr,
-										IMG_UINT32			ui32Size,
+										IMG_UINT32 			ui32Size,
 										IMG_UINT32			ui32MMUContextID,
-										IMG_UINT32			ui32PDumpFlags);
+										IMG_UINT32 			ui32PDumpFlags);
 
 	PVRSRV_ERROR PDumpSignatureBuffer(PVRSRV_DEVICE_IDENTIFIER *psDevId,
 									  IMG_CHAR			*pszFileName,
 									  IMG_CHAR			*pszBufferType,
 									  IMG_UINT32		ui32FileOffset,
 									  IMG_DEV_VIRTADDR	sDevBaseAddr,
-									  IMG_UINT32		ui32Size,
+									  IMG_UINT32 		ui32Size,
 									  IMG_UINT32		ui32MMUContextID,
-									  IMG_UINT32		ui32PDumpFlags);
+									  IMG_UINT32 		ui32PDumpFlags);
 
 	PVRSRV_ERROR PDumpCBP(PPVRSRV_KERNEL_MEM_INFO	psROffMemInfo,
 				  IMG_UINT32				ui32ROffOffset,
@@ -307,7 +332,7 @@ extern IMG_UINT32 g_ui32EveryLineCounter;
 	IMG_VOID PDumpSuspendKM(IMG_VOID);
 	IMG_VOID PDumpResumeKM(IMG_VOID);
 
-
+	/* New pdump common functions */
 	PVRSRV_ERROR PDumpStoreMemToFile(PDUMP_MMU_ATTRIB *psMMUAttrib,
 							         IMG_CHAR *pszFileName,
 									 IMG_UINT32 ui32FileOffset,
@@ -354,7 +379,7 @@ extern IMG_UINT32 g_ui32EveryLineCounter;
 	#define PDUMPRESUME				PDumpResumeKM
 
 #else
-		#if ((defined(LINUX) || defined(GCC_IA32)) || defined(GCC_ARM))
+#if defined LINUX || defined (__QNXNTO__) || defined GCC_IA32 || defined GCC_ARM
 			#define PDUMPMEMPOL(args...)
 			#define PDUMPMEM(args...)
 			#define PDUMPMEMPTENTRIES(args...)
@@ -408,4 +433,8 @@ extern IMG_UINT32 g_ui32EveryLineCounter;
 }
 #endif
 
-#endif
+#endif /* _PDUMP_KM_H_ */
+
+/******************************************************************************
+ End of file (pdump_km.h)
+******************************************************************************/

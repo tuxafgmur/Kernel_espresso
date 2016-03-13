@@ -11,7 +11,6 @@
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- *
  */
 
 #include <linux/err.h>
@@ -133,10 +132,6 @@ int omap_ion_probe(struct platform_device *pdev)
 			goto err;
 		}
 		ion_device_add_heap(omap_ion_device, heaps[i]);
-		pr_info("%s: adding heap %s of type %d with %lx@%x\n",
-			__func__, heap_data->name, heap_data->type,
-			heap_data->base, heap_data->size);
-
 	}
 
 	platform_set_drvdata(pdev, omap_ion_device);
@@ -193,7 +188,7 @@ int omap_ion_share_fd_to_buffers(int fd, struct ion_buffer **buffers,
 
 #ifdef CONFIG_PVR_SGX
 	if (*num_handles == 2) {
-		PVRSRVExportFDToIONHandles(fd, &client, handles);
+		PVRSRVExportFDToIONHandles(fd, &client, handles, num_handles);
 	} else if (*num_handles == 1) {
 		handles[0] = PVRSRVExportFDToIONHandle(fd, &client);
 	} else {
@@ -207,9 +202,7 @@ int omap_ion_share_fd_to_buffers(int fd, struct ion_buffer **buffers,
 				handles,
 				num_handles);
 	} else {
-		pr_err("%s: export_fd_to_ion_handles"
-				"not initiazied",
-				__func__);
+		pr_err("%s: export_fd_to_ion_handles not initiazied", __func__);
 		ret = -EINVAL;
 		goto exit;
 	}
@@ -243,4 +236,3 @@ static void __exit ion_exit(void)
 
 module_init(ion_init);
 module_exit(ion_exit);
-

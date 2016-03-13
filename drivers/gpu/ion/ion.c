@@ -189,34 +189,6 @@ static bool ion_handle_validate(struct ion_client *client, struct ion_handle *ha
 	return false;
 }
 
-static bool ion_handle_validate_frm_dev(struct ion_device *dev,
-					struct ion_handle *handle)
-{
-	struct rb_node **p;
-	struct rb_node *parent = NULL;
-	struct ion_client *client;
-	struct rb_node *n;
-
-	p = &dev->user_clients.rb_node;
-	while (*p) {
-		parent = *p;
-		client = rb_entry(parent, struct ion_client, node);
-
-		n = client->handles.rb_node;
-		while (n) {
-			struct ion_handle *handle_node =
-					rb_entry(n, struct ion_handle, node);
-			if (handle < handle_node)
-				n = n->rb_left;
-			else if (handle > handle_node)
-				n = n->rb_right;
-			else
-				return true;
-		}
-	}
-	return false;
-}
-
 static void ion_handle_add(struct ion_client *client, struct ion_handle *handle)
 {
 	struct rb_node **p = &client->handles.rb_node;
@@ -231,8 +203,6 @@ static void ion_handle_add(struct ion_client *client, struct ion_handle *handle)
 			p = &(*p)->rb_left;
 		else if (handle > entry)
 			p = &(*p)->rb_right;
-		else
-			WARN(1, "%s: buffer already found.", __func__);
 	}
 
 	rb_link_node(&handle->node, parent, p);
@@ -394,7 +364,6 @@ int ion_phys_frm_dev(struct ion_device *dev, struct ion_handle *handle,
 	return ret;
 }
 EXPORT_SYMBOL(ion_phys_frm_dev);
-
 
 void *ion_map_kernel(struct ion_client *client, struct ion_handle *handle)
 {
@@ -905,7 +874,6 @@ static int ion_flush_cached(struct ion_handle *handle, size_t size,
 			   unsigned long vaddr)
 {
 	struct ion_buffer *buffer = handle->buffer;
-	struct ion_client *client;
 	int ret;
 
 	if (!handle->buffer->heap->ops->flush_user) {
@@ -931,7 +899,6 @@ static int ion_inval_cached(struct ion_handle *handle, size_t size,
 			   unsigned long vaddr)
 {
 	struct ion_buffer *buffer = handle->buffer;
-	struct ion_client *client;
 	int ret;
 
 	if (!handle->buffer->heap->ops->inval_user) {
@@ -956,9 +923,9 @@ static int ion_inval_cached(struct ion_handle *handle, size_t size,
 static int ion_map_gralloc(struct ion_client *client, void *grallocHandle,
 			   struct ion_handle **handleY)
 {
-	struct ion_client *pvr_ion_client;
+	struct ion_client *pvr_ion_client = NULL;
 	struct ion_buffer *ionbuff;
-	int fd = (int) grallocHandle;
+/*	int fd = (int) grallocHandle; */ /*temporary commenting*/
 
 //	*handleY = PVRSRVExportFDToIONHandle(fd, &pvr_ion_client);//Temporary fix
 	ionbuff = ion_share(pvr_ion_client, *handleY);

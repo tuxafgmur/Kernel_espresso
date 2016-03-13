@@ -1,4 +1,3 @@
-
 config PVR_SGX
 	tristate "PowerVR SGX support"
 	depends on ARCH_OMAP && OMAP2_DSS
@@ -40,10 +39,12 @@ endchoice
 config PVR_NEED_PVR_DPF
 	bool "Enable debugging messages in release build"
 	depends on PVR_BUILD_RELEASE
+	default n
 
 config PVR_NEED_PVR_ASSERT
 	bool "Enable assertions in release build"
 	depends on PVR_BUILD_RELEASE
+	default n
 
 # Debugging options
 
@@ -66,7 +67,6 @@ config PVR_DEBUG_BRIDGE_KM_DISPATCH_TABLE
 	bool "Dump bridge dispatch table entries"
 	depends on PVR_BUILD_DEBUG
 	default n
-
 
 #
 # General options
@@ -100,7 +100,7 @@ config PVR_USSE_EDM_STATUS_DEBUG
 config PVR_DUMP_MK_TRACE
 	bool "Dump microkernel trace on HW recovery"
 	depends on PVR_USSE_EDM_STATUS_DEBUG
-	default y
+	default n
 
 config PVR_PDUMP
 	bool "Support for parameter dumping (Pdump)"
@@ -113,7 +113,7 @@ config PVR_OMAP_DSS2
 choice
 	prompt "SGX DVFS mode"
 	depends on PVR_SGX
-	default SGX_DVFS_MODE_NONE
+	default SGX_DVFS_MODE_OPTIMIZED
 
 config SGX_DVFS_MODE_NONE
 	bool "None"
@@ -129,3 +129,17 @@ config SGX_DVFS_IDLE_TIMEOUT
 	int "DVFS idle timeout (us)"
 	depends on PVR_SGX
 	default 1000
+
+config PVR_LINUX_MEM_AREA_POOL
+	bool "Enable uncached allocation pool"
+	depends on PVR_SGX
+	default y
+
+config PVR_LINUX_MEM_AREA_POOL_MAX_PAGES
+	int "Maximum number of pages in pool"
+	depends on PVR_LINUX_MEM_AREA_POOL
+	default 10800
+	help
+	   Pool size in pages.
+	   A size of 0 disables the pool.
+	   A size of -1 allows the pool to grow indefinitely.
