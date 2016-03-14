@@ -808,7 +808,7 @@ static ssize_t store_hispeed_freq(struct kobject *kobj,
 	return count;
 }
 
-static struct global_attr hispeed_freq_attr = __ATTR(hispeed_freq, 0644,
+static struct global_attr hispeed_freq_attr = __ATTR(hispeed_freq, 0664,
 		show_hispeed_freq, store_hispeed_freq);
 
 
@@ -831,7 +831,7 @@ static ssize_t store_go_hispeed_load(struct kobject *kobj,
 	return count;
 }
 
-static struct global_attr go_hispeed_load_attr = __ATTR(go_hispeed_load, 0644,
+static struct global_attr go_hispeed_load_attr = __ATTR(go_hispeed_load, 0664,
 		show_go_hispeed_load, store_go_hispeed_load);
 
 static ssize_t show_min_sample_time(struct kobject *kobj,
@@ -853,7 +853,7 @@ static ssize_t store_min_sample_time(struct kobject *kobj,
 	return count;
 }
 
-static struct global_attr min_sample_time_attr = __ATTR(min_sample_time, 0644,
+static struct global_attr min_sample_time_attr = __ATTR(min_sample_time, 0664,
 		show_min_sample_time, store_min_sample_time);
 
 static ssize_t show_above_hispeed_delay(struct kobject *kobj,
@@ -897,7 +897,7 @@ static ssize_t store_timer_rate(struct kobject *kobj,
 	return count;
 }
 
-static struct global_attr timer_rate_attr = __ATTR(timer_rate, 0644,
+static struct global_attr timer_rate_attr = __ATTR(timer_rate, 0664,
 		show_timer_rate, store_timer_rate);
 
 static ssize_t show_input_boost(struct kobject *kobj, struct attribute *attr,
@@ -1034,7 +1034,7 @@ out:
 }
 
 static struct global_attr sampling_periods_attr = __ATTR(sampling_periods,
-			0644, show_sampling_periods, store_sampling_periods);
+			0664, show_sampling_periods, store_sampling_periods);
 
 static ssize_t show_hi_perf_threshold(struct kobject *kobj,
 			struct attribute *attr, char *buf)
@@ -1056,7 +1056,7 @@ static ssize_t store_hi_perf_threshold(struct kobject *kobj,
 }
 
 static struct global_attr hi_perf_threshold_attr = __ATTR(hi_perf_threshold,
-			0644, show_hi_perf_threshold, store_hi_perf_threshold);
+			0664, show_hi_perf_threshold, store_hi_perf_threshold);
 
 
 static ssize_t show_low_power_threshold(struct kobject *kobj,
@@ -1079,7 +1079,7 @@ static ssize_t store_low_power_threshold(struct kobject *kobj,
 }
 
 static struct global_attr low_power_threshold_attr = __ATTR(low_power_threshold,
-		     0644, show_low_power_threshold, store_low_power_threshold);
+		     0664, show_low_power_threshold, store_low_power_threshold);
 
 static ssize_t show_low_power_rate(struct kobject *kobj,
 			struct attribute *attr, char *buf)
@@ -1101,7 +1101,7 @@ static ssize_t store_low_power_rate(struct kobject *kobj,
 }
 
 static struct global_attr low_power_rate_attr = __ATTR(low_power_rate,
-		     0644, show_low_power_rate, store_low_power_rate);
+		     0664, show_low_power_rate, store_low_power_rate);
 
 
 static struct attribute *interactive_attributes[] = {
