@@ -585,16 +585,16 @@ static int dsscomp_probe(struct platform_device *pdev)
 	cdev->dbgfs = debugfs_create_dir("dsscomp", NULL);
 	if (IS_ERR_OR_NULL(cdev->dbgfs))
 		dev_warn(DEV(cdev), "failed to create debug files.\n");
-	else {
+#ifdef CONFIG_DSSCOMP_DEBUG_LOG
+        else {
 		debugfs_create_file("comps", S_IRUGO,
 			cdev->dbgfs, dsscomp_dbg_comps, &dsscomp_debug_fops);
 		debugfs_create_file("gralloc", S_IRUGO,
 			cdev->dbgfs, dsscomp_dbg_gralloc, &dsscomp_debug_fops);
-#ifdef CONFIG_DSSCOMP_DEBUG_LOG
 		debugfs_create_file("log", S_IRUGO,
 			cdev->dbgfs, dsscomp_dbg_events, &dsscomp_debug_fops);
-#endif
 	}
+#endif
 
 	cdev->pdev = &pdev->dev;
 	platform_set_drvdata(pdev, cdev);
@@ -662,11 +662,11 @@ void dsscomp_kdump(void)
 		.size = sizeof(dump_buf) - 1,
 	};
 	int i;
-
+#ifdef CONFIG_DSSCOMP_DEBUG_LOG
 	dsscomp_dbg_events(&s);
 	dsscomp_dbg_comps(&s);
 	dsscomp_dbg_gralloc(&s);
-
+#endif
 	for (i = 0; i < s.count; i += DUMP_CHUNK) {
 		if ((s.count - i) > DUMP_CHUNK) {
 			char c = s.buf[i + DUMP_CHUNK];
