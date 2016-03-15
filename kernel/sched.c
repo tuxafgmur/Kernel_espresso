@@ -4555,7 +4555,7 @@ void __wake_up_sync_key(wait_queue_head_t *q, unsigned int mode,
 	if (unlikely(!q))
 		return;
 
-	if (unlikely(!nr_exclusive))
+	if (unlikely(nr_exclusive != 1))
 		wake_flags = 0;
 
 	spin_lock_irqsave(&q->lock, flags);
@@ -5392,7 +5392,6 @@ long sched_setaffinity(pid_t pid, const struct cpumask *in_mask)
 	p = find_process_by_pid(pid);
 	if (!p) {
 		rcu_read_unlock();
-		put_online_cpus();
 		return -ESRCH;
 	}
 
@@ -7154,13 +7153,13 @@ build_sched_groups(struct sched_domain *sd, int cpu)
 
 	for_each_cpu(i, span) {
 		struct sched_group *sg;
-		int group = get_group(i, sdd, &sg);
-		int j;
+		int j, group;
 
 		if (cpumask_test_cpu(i, covered))
 			continue;
 
-		cpumask_clear(sched_group_cpus(sg));
+		group = get_group(i, sdd, &sg);
+                cpumask_clear(sched_group_cpus(sg));
 		sg->sgp->power = 0;
 
 		for_each_cpu(j, span) {
